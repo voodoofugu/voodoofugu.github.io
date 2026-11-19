@@ -14,7 +14,8 @@ full documentation or maintaining a library list in the npm profile README.
 - The visual shell follows the documentation sites for `morphing-scroll`,
   `nexus-state` and `styled-atom`, while project accent colors identify entries.
 - The main page scroll uses `morphing-scroll` with the same custom thumb as the
-  documentation sites; the side navigation remains fixed within that scroll.
+  documentation sites; native CSS sticky keeps the side navigation fixed and
+  lets its content column stop it before the footer.
 - Package metadata stays in `src/libraries.ts`; detail views share one template.
 - The catalog has no search or nested navigation while the list remains small.
 - Existing documentation sites link back here from their footers.

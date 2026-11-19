@@ -217,32 +217,10 @@ function App() {
   const [theme, setTheme] = useTheme();
   const selected = route === "overview" ? undefined : libraryBySlug.get(route);
   const page = React.useRef<MorphScrollHandle>(null);
-  const navigation = React.useRef<HTMLElement>(null);
-  const footer = React.useRef<HTMLElement>(null);
   const shell = React.useRef<HTMLDivElement>(null);
-  const keepNavigationStill = React.useCallback<
+  const updateScrollState = React.useCallback<
     NonNullable<MorphScrollProps["onScrollPosition"]>
-  >((_left, top, _max, overscroll) => {
-    const desiredOffset = top - overscroll.y;
-    let offset = desiredOffset;
-
-    if (navigation.current && footer.current) {
-      const headerHeight = 59;
-      const navigationTop = headerHeight + 32;
-      const gapBeforeFooter = 24;
-      const footerLimit =
-        desiredOffset +
-        footer.current.getBoundingClientRect().top -
-        navigationTop -
-        navigation.current.offsetHeight -
-        gapBeforeFooter;
-      offset = Math.min(desiredOffset, footerLimit);
-    }
-
-    navigation.current?.style.setProperty(
-      "--side-scroll-offset",
-      `${Math.max(0, offset)}px`,
-    );
+  >((_left, top) => {
     shell.current?.toggleAttribute("data-scrolled", top > 8);
   }, []);
 
@@ -269,7 +247,7 @@ function App() {
       <main className="page-scroll">
         <ChromeScroll
           controls={{ keys: true }}
-          onScrollPosition={keepNavigationStill}
+          onScrollPosition={updateScrollState}
           ref={page}
         >
           <div className="scroll-content">
@@ -277,7 +255,6 @@ function App() {
               <aside
                 aria-label="Library navigation"
                 className="side-nav"
-                ref={navigation}
               >
                 <nav>
                   <a
@@ -307,7 +284,7 @@ function App() {
               </div>
             </div>
 
-            <footer className="site-footer" ref={footer}>
+            <footer className="site-footer">
               <div className="site-footer-inner">
                 <span>© {new Date().getFullYear()} Georg Schilin</span>
                 <nav aria-label="External links">

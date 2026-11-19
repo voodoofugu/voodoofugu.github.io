@@ -168,10 +168,9 @@ a { color: inherit; }
 
 .side-nav {
   --nav-corner: 0.75rem;
-  position: relative;
+  position: sticky;
+  top: calc(var(--top-bar-height) + 32px);
   min-width: 0;
-  transform: translate3d(0, var(--side-scroll-offset, 0), 0);
-  will-change: transform;
 }
 
 .side-nav nav { display: grid; gap: 3px; padding-right: 6px; }
