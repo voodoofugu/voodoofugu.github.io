@@ -184,18 +184,12 @@ a { color: inherit; }
   gap: 10px;
   align-items: center;
   min-height: 38px;
+  border-radius: 0 6px 6px 0;
   color: var(--ink-soft);
   font-family: var(--mono);
   font-size: 12px;
   text-decoration: none;
   padding: 7px 10px 7px 13px;
-  clip-path: polygon(
-    var(--nav-corner) 0,
-    100% 0,
-    100% 100%,
-    var(--nav-corner) 100%,
-    0 50%
-  );
   transition: color 160ms ease, filter 160ms ease, transform 160ms ease;
 }
 
@@ -204,8 +198,15 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   z-index: -2;
+  border-radius: 0 6px 6px 0;
   background: transparent;
-  clip-path: inherit;
+  clip-path: polygon(
+    var(--nav-corner) 0,
+    100% 0,
+    100% 100%,
+    var(--nav-corner) 100%,
+    0 50%
+  );
   content: "";
   transition: background-color 160ms ease;
 }
@@ -213,6 +214,7 @@ a { color: inherit; }
 .side-nav a::after {
   z-index: -1;
   inset: 1px;
+  border-radius: 0 5px 5px 0;
   clip-path: polygon(
     calc(var(--nav-corner) - 1px) 0,
     100% 0,
