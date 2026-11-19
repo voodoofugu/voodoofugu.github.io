@@ -1,5 +1,7 @@
 import React from "react";
+import type { MorphScrollHandle, MorphScrollProps } from "morphing-scroll";
 
+import ChromeScroll from "./ChromeScroll";
 import { libraries, libraryBySlug, type Library } from "./libraries";
 
 type Theme = "system" | "light" | "dark";
@@ -121,7 +123,6 @@ function Overview() {
   return (
     <>
       <section className="hero">
-        <p className="eyebrow">frontend systems · Georg Schilin</p>
         <h1>Libraries for interaction-heavy interfaces.</h1>
         <p className="hero-copy">
           Small, focused tools for scrolling, state, CSS lifecycle and UI
@@ -190,7 +191,6 @@ function LibraryPage({ library }: { library: Library }) {
         <div>
           <p className="eyebrow">{library.category}</p>
           <h1>{library.name}</h1>
-          <code>{library.packageName}</code>
         </div>
       </div>
 
@@ -216,16 +216,45 @@ function App() {
   const route = useRoute();
   const [theme, setTheme] = useTheme();
   const selected = route === "overview" ? undefined : libraryBySlug.get(route);
+  const page = React.useRef<MorphScrollHandle>(null);
+  const navigation = React.useRef<HTMLElement>(null);
+  const footer = React.useRef<HTMLElement>(null);
+  const shell = React.useRef<HTMLDivElement>(null);
+  const keepNavigationStill = React.useCallback<
+    NonNullable<MorphScrollProps["onScrollPosition"]>
+  >((_left, top, _max, overscroll) => {
+    const desiredOffset = top - overscroll.y;
+    let offset = desiredOffset;
+
+    if (navigation.current && footer.current) {
+      const headerHeight = 59;
+      const navigationTop = headerHeight + 32;
+      const gapBeforeFooter = 24;
+      const footerLimit =
+        desiredOffset +
+        footer.current.getBoundingClientRect().top -
+        navigationTop -
+        navigation.current.offsetHeight -
+        gapBeforeFooter;
+      offset = Math.min(desiredOffset, footerLimit);
+    }
+
+    navigation.current?.style.setProperty(
+      "--side-scroll-offset",
+      `${Math.max(0, offset)}px`,
+    );
+    shell.current?.toggleAttribute("data-scrolled", top > 8);
+  }, []);
 
   React.useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    page.current?.scrollTo(0, { duration: 0 });
     document.title = selected
       ? `${selected.name} · voodoofugu libraries`
-      : "voodoofugu · frontend libraries";
+      : "voodoofugu · libraries";
   }, [selected]);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" ref={shell}>
       <header className="top-bar">
         <div className="top-bar-inner">
           <a className="brand" href="#/">
@@ -237,39 +266,60 @@ function App() {
         </div>
       </header>
 
-      <div className="page-layout">
-        <aside className="side-nav" aria-label="Library navigation">
-          <nav>
-            <a className={!selected ? "active" : undefined} href="#/">
-              Overview
-            </a>
-            {libraries.map((library) => (
-              <a
-                className={selected?.slug === library.slug ? "active" : undefined}
-                href={`#/${library.slug}`}
-                key={library.slug}
-                style={{ "--project-accent": library.accent } as React.CSSProperties}
+      <main className="page-scroll">
+        <ChromeScroll
+          controls={{ keys: true }}
+          onScrollPosition={keepNavigationStill}
+          ref={page}
+        >
+          <div className="scroll-content">
+            <div className="page-layout">
+              <aside
+                aria-label="Library navigation"
+                className="side-nav"
+                ref={navigation}
               >
-                <Logo library={library} />
-                <span>{library.name}</span>
-              </a>
-            ))}
-          </nav>
-        </aside>
+                <nav>
+                  <a
+                    aria-current={!selected ? "page" : undefined}
+                    className={!selected ? "active" : undefined}
+                    href="#/"
+                  >
+                    <span>Overview</span>
+                  </a>
+                  {libraries.map((library) => (
+                    <a
+                      aria-current={selected?.slug === library.slug ? "page" : undefined}
+                      className={selected?.slug === library.slug ? "active" : undefined}
+                      href={`#/${library.slug}`}
+                      key={library.slug}
+                      style={{ "--project-accent": library.accent } as React.CSSProperties}
+                    >
+                      <Logo library={library} />
+                      <span>{library.name}</span>
+                    </a>
+                  ))}
+                </nav>
+              </aside>
 
-        <main>{selected ? <LibraryPage library={selected} /> : <Overview />}</main>
-      </div>
+              <div className="page-content">
+                {selected ? <LibraryPage library={selected} /> : <Overview />}
+              </div>
+            </div>
 
-      <footer className="site-footer">
-        <div className="site-footer-inner">
-          <span>© {new Date().getFullYear()} Georg Schilin</span>
-          <nav aria-label="External links">
-            <ExternalLink href="https://resume.voodoofugu.com/?lang=ru">Portfolio</ExternalLink>
-            <ExternalLink href="https://github.com/voodoofugu">GitHub</ExternalLink>
-            <ExternalLink href="https://www.npmjs.com/~voodoofugu">npm</ExternalLink>
-          </nav>
-        </div>
-      </footer>
+            <footer className="site-footer" ref={footer}>
+              <div className="site-footer-inner">
+                <span>© {new Date().getFullYear()} Georg Schilin</span>
+                <nav aria-label="External links">
+                  <ExternalLink href="https://github.com/voodoofugu">github</ExternalLink>
+                  <ExternalLink href="https://www.npmjs.com/~voodoofugu">npm</ExternalLink>
+                  <ExternalLink href="https://resume.voodoofugu.com/?lang=ru">author</ExternalLink>
+                </nav>
+              </div>
+            </footer>
+          </div>
+        </ChromeScroll>
+      </main>
     </div>
   );
 }

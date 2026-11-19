@@ -7,7 +7,6 @@ import styledAtomLogo from "./assets/styled-atom.svg";
 export type Library = {
   slug: string;
   name: string;
-  packageName: string;
   category: string;
   description: string;
   details: string;
@@ -23,7 +22,6 @@ export const libraries: readonly Library[] = [
   {
     slug: "morphing-scroll",
     name: "morphing-scroll",
-    packageName: "morphing-scroll",
     category: "interaction engine",
     description:
       "Custom scrolling and slider mechanics for interaction-heavy React interfaces.",
@@ -43,7 +41,6 @@ export const libraries: readonly Library[] = [
   {
     slug: "nexus-state",
     name: "nexus-state",
-    packageName: "nexus-state",
     category: "state system",
     description:
       "A small state manager with automatic selector tracking and traceable updates.",
@@ -63,7 +60,6 @@ export const libraries: readonly Library[] = [
   {
     slug: "styled-atom",
     name: "styled-atom",
-    packageName: "styled-atom",
     category: "CSS lifecycle",
     description:
       "Lifecycle-managed CSS assets and focused inline styles for dynamic UI surfaces.",
@@ -83,7 +79,6 @@ export const libraries: readonly Library[] = [
   {
     slug: "keytask-core",
     name: "keytask",
-    packageName: "keytask-core",
     category: "task control",
     description:
       "Key-based scheduling for timeout and animation-frame work.",
@@ -102,7 +97,6 @@ export const libraries: readonly Library[] = [
   {
     slug: "demo-workbench",
     name: "demo-workbench",
-    packageName: "demo-workbench",
     category: "developer tool",
     description:
       "A React shell for browsing, filtering and opening project demos and screens.",
